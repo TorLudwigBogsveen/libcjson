@@ -1,5 +1,5 @@
 # libcjson
-
+A json library written in c
 # TODO
 - [ ] fix the array type
 - [ ] add json parsing, currently only works from c -> json.
