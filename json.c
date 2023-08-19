@@ -185,11 +185,15 @@ int __validate_brackets(const JStr json_str) {
     }
   }
 
-  return (l_cb_count == r_cb_count) && (l_sb_count == r_sb_count);
+  return ((l_cb_count == r_cb_count) && (l_sb_count == r_sb_count) ? 0 : -1);
 }
 
-JObject *j_str_to_obj(JStr *json_str) {
+JObject *j_str_to_obj(const JStr json_str) {
   JObject *obj = (JObject *)malloc(sizeof(JObject));
+
+  // early return if there is an odd number of brackets
+  if (__validate_brackets(json_str) != 0)
+    return (JObject *)-1;
 
   return obj;
 }

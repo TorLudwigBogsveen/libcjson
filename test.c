@@ -1,14 +1,26 @@
+#include "assert.h"
 #include "json.h"
 #include "list.h"
 #include "string.h"
 #include <stdio.h>
 
-void string_test();
 
-int main(void) {
-  JObject *obj = j_new_object();
-  JObject *koord = j_new_object();
-  JObject *poof = j_new_object();
+#define TEST_OUTPUT_1                                                          \
+  "{\"koords\": {\"lat\": 60.128161,\"lon\": 18.643501,\"poof\": {\"xyz\": "   \
+  "100}},\"country\": \"SWE\",\"inhabs\": 10000000}"
+
+#define TEST_INPUT_1                                                           \
+  "{\"koords\": {\"lat\": 60.128161,\"lon\": 18.643501,\"poof\": {\"xyz\": "   \
+  "100}},\"country\": \"SWE\",\"inhabs\": 10000000"
+
+JObject *obj;
+JObject *koord;
+JObject *poof;
+
+void init() {
+  obj = j_new_object();
+  koord = j_new_object();
+  poof = j_new_object();
 
   j_add_int(poof, "xyz", 100);
 
@@ -20,14 +32,36 @@ int main(void) {
 
   j_add_str(obj, "country", "SWE");
   j_add_int(obj, "inhabs", 10000000);
+}
 
-  printf("obj->str: %s\n", j_obj_to_str(obj));
+void type_missmatch_test() {
+  // test the type missmatch
+  printf("This should print a \"Type missmatch!\" error to the terminal!\n");
+  assert((int)(size_t)j_get_obj(obj, "inhabs") == -1);
+}
 
-  printf("xyz: %d",
-         j_get_int(j_get_obj(j_get_obj(obj, "koords"), "poof"), "xyz"));
+void nested_get_test() {
+  // check nested gets
+  assert(j_get_int(j_get_obj(j_get_obj(obj, "koords"), "poof"), "xyz") == 100);
+}
 
-  printf("type check (get a int as obj): %d",
-         (int)(size_t)j_get_obj(obj, "inhabs"));
+void obj_to_str_test() {
+  // test obj to str
+  assert(strcmp(j_obj_to_str(obj), TEST_OUTPUT_1) == 0);
+}
+
+void test_iccorect_formated_json() {
+  int ret = (int)(size_t)j_str_to_obj(TEST_INPUT_1);
+  assert(ret == -1);
+}
+
+int main(void) {
+  init();
+
+  type_missmatch_test();
+  nested_get_test();
+  obj_to_str_test();
+  test_iccorect_formated_json();
 
   return 0;
 }
