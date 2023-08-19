@@ -1,9 +1,9 @@
 #include "assert.h"
 #include "json.h"
+#include "json_lexer.h"
 #include "list.h"
 #include "string.h"
 #include <stdio.h>
-
 
 #define TEST_OUTPUT_1                                                          \
   "{\"koords\": {\"lat\": 60.128161,\"lon\": 18.643501,\"poof\": {\"xyz\": "   \
@@ -55,6 +55,12 @@ void test_iccorect_formated_json() {
   assert(ret == -1);
 }
 
+void test_tokenizer() {
+  JLTokenStream *stream = jl_new_token_stream();
+  jl_tokenize(stream, "{\"\"}");
+  jl_print_token_stream(stream);
+}
+
 int main(void) {
   init();
 
@@ -62,6 +68,6 @@ int main(void) {
   nested_get_test();
   obj_to_str_test();
   test_iccorect_formated_json();
-
+  test_tokenizer();
   return 0;
 }
