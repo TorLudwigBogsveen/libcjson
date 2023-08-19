@@ -15,7 +15,7 @@ typedef struct LList {
 } LList;
 
 /**
- *  this is doc
+ *  allocates space for a new list and returns a pointer to the memory location
  */
 LList *l_new_list();
 
@@ -23,7 +23,6 @@ LList *l_new_list();
  * appends a value to the end of the list
  */
 int l_append(LList *list, void *value);
-
 
 /**
  * removes the value at a specific index.

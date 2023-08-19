@@ -4,8 +4,8 @@
 #include "malloc.h"
 #include "stdio.h"
 #include "string.h"
-#include <stdlib.h>
-#include <vcruntime.h>
+
+
 
 JObject *j_new_object() {
   JObject *obj = (JObject *)malloc(sizeof(JObject));

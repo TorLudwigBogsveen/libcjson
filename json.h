@@ -47,7 +47,10 @@ typedef struct JObject {
   LList *data;
 } JObject;
 
-
+/**
+ *Allaocates memmoryspace for a new json object and returns the pointer
+ * 
+ */
 JObject *j_new_object();
 
 int j_add_bool(JObject *object, JStr key, JBool value);
@@ -55,7 +58,6 @@ int j_add_int(JObject *object, JStr key, int value);
 int j_add_str(JObject *object, JStr key, JStr value);
 int j_add_obj(JObject *object, JStr key, JObject *value);
 int j_add_double(JObject *object, JStr key, double value);
-
 
 JBool *j_get_bool(JObject *object, JStr key);
 int j_get_int(JObject *object, JStr key);

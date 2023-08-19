@@ -57,7 +57,7 @@ void test_iccorect_formated_json() {
 
 void test_tokenizer() {
   JLTokenStream *stream = jl_new_token_stream();
-  jl_tokenize(stream, "{\"\"}");
+  jl_tokenize(stream, "{}[]\",:");
   jl_print_token_stream(stream);
 }
 
