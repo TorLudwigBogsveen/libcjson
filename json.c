@@ -26,13 +26,15 @@ int __add(JObject *object, JStr key, void *value, JType type) {
   return ret;
 }
 
-void *__get(JObject *object, JStr key) {
+void *__get(JObject *object, JStr key, JType type) {
   int counter = 0;
   LNode *current = object->data->first;
   while (counter < object->children) {
     JKVPair *kvp = current->value;
     if (strcmp(kvp->key, key) == 0)
-      return kvp->value;
+
+      // type checking, returns -1 if the types don't match.
+      return kvp->type == type ? kvp->value : (void *)-1;
     current = current->next;
     counter++;
   }
@@ -62,23 +64,43 @@ int j_add_double(JObject *object, JStr key, double value) {
 };
 
 JBool *j_get_bool(JObject *object, JStr key) {
-  return (JBool *)(size_t)__get(object, key);
+  void *ret = __get(object, key, JSON_TYPE_BOOL);
+  if ((int)(size_t)ret != -1)
+    return (JBool *)ret;
+  printf("Type missmatch!");
+  return (JBool *)ret;
 }
 
 int j_get_int(JObject *object, JStr key) {
-  return (int)(size_t)__get(object, key);
+  void *ret = __get(object, key, JSON_TYPE_NUM);
+  if ((int)(size_t)ret != -1)
+    return (int)(size_t)ret;
+  printf("Type missmatch!");
+  return (int)(size_t)ret;
 }
 
 JStr j_get_str(JObject *object, JStr key) {
-  return (JStr)(size_t)__get(object, key);
+  void *ret = __get(object, key, JSON_TYPE_STR);
+  if ((int)(size_t)ret != -1)
+    return (JStr)ret;
+  printf("Type missmatch!");
+  return (JStr)ret;
 }
 
 JObject *j_get_obj(JObject *object, JStr key) {
-  return (JObject *)(size_t)__get(object, key);
+  void *ret = __get(object, key, JSON_TYPE_OBJECT);
+  if ((int)(size_t)ret != -1)
+    return (JObject *)ret;
+  printf("Type missmatch!");
+  return (JObject *)ret;
 }
 
 double j_get_double(JObject *object, JStr key) {
-  return *(double *)__get(object, key);
+  void *ret = __get(object, key, JSON_TYPE_DOUBLE);
+  if ((int)(size_t)ret != -1)
+    return *(double *)ret;
+  printf("Type missmatch!");
+  return *(double *)ret;
 }
 
 JStr __kvp_to_str(JKVPair *kvp) {
