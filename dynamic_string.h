@@ -1,3 +1,7 @@
+/**
+ * @file
+ */
+
 #ifndef STRING
 #define STRING
 

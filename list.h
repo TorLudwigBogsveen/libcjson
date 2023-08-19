@@ -1,11 +1,9 @@
-// Copyright 2023 Johannes Thorén. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
+/**
+ * @file
+ */
 #ifndef LIST_H
 #define LIST_H
 
-// represents a node in a linked list
 typedef struct LNode {
   void *value;
   struct LNode *next;
@@ -17,7 +15,7 @@ typedef struct LList {
 } LList;
 
 /**
- * creates a new empty list
+ *  this is doc
  */
 LList *l_new_list();
 

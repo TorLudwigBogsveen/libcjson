@@ -26,18 +26,6 @@ int __add(JObject *object, JStr key, void *value, JType type) {
   return ret;
 }
 
-// this could be simplified and more effective if we access the next
-// node directly
-// void *__get(JObject *object, JStr key) {
-//  for (int i = 0; i < object->children; i++) {
-//    JKVPair *child = (JKVPair *)(size_t)l_get_index(object->data->first, i,
-//    0); if (strcmp(child->key, key) == 0) {
-//      return child->value;
-//    }
-//  }
-//  return (void *)-1;
-//}
-
 void *__get(JObject *object, JStr key) {
   int counter = 0;
   LNode *current = object->data->first;

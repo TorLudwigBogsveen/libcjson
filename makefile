@@ -7,3 +7,6 @@ build: $(OFILES)
 	
 $(OFILES): $(CFILES)
 	$(CC) -c $(CFILES)
+
+compile_commands.json: test.c
+	clang -MJ compile_commands.json test.c
