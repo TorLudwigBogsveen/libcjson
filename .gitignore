@@ -1,0 +1,8 @@
+html/
+latex/
+
+
+*.exe
+*.json
+*.o
+*.zip
