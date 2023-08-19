@@ -52,6 +52,6 @@ void jl_tokenize(JLTokenStream *token_stream, const char *str) {
 void jl_print_token_stream(JLTokenStream *token_stream) {
   for (int i = 0; i < token_stream->size; i++) {
     printf("(%d '%c')", token_stream->tokens[i]->token_name,
-           (char)(size_t)(char *)token_stream->tokens[i]->token_value);
+           (char)(size_t)token_stream->tokens[i]->token_value);
   }
 }
