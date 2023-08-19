@@ -23,8 +23,11 @@ int main(void) {
 
   printf("obj->str: %s\n", j_obj_to_str(obj));
 
-  printf("xyz: %d",j_get_int(j_get_obj(j_get_obj(obj, "koords"), "poof"), "xyz"));
+  printf("xyz: %d",
+         j_get_int(j_get_obj(j_get_obj(obj, "koords"), "poof"), "xyz"));
 
+  printf("type check (get a int as obj): %d",
+         (int)(size_t)j_get_obj(obj, "inhabs"));
 
   return 0;
 }
