@@ -21,7 +21,7 @@ String string_with_capacity(size_t capacity);
 
 void string_push_char(String *str, char ch);
 
-void string_push_string(String *str, const char *other);
+void string_append(String *str, const char *other);
 
 void string_reserve(String *str, size_t capacity);
 
