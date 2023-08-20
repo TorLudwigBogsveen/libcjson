@@ -58,7 +58,7 @@ void test_iccorect_formated_json() {
 void test_tokenizer() {
   JLTokenStream *stream = jl_new_token_stream();
   printf("poof1!");
-  jl_tokenize(stream, "{\"test\":10}");
+  jl_tokenize(stream, "{\"x\":10, \"y\":20}");
   printf("poof2!");
   jl_print_token_stream(stream);
 }

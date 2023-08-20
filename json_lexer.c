@@ -41,6 +41,12 @@ int __is_separator(const char c) {
 
 #define STORE_SIZE 1024
 
+// just nu så har vi samma minnes plats för alla värden som sparas i store
+// vilket gör att vi skriver över namn osv.
+//
+// det vi får : (1 '{')(1 '"')(3 'y')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
+// så det borde vara : (1 '{')(1 '"')(3 'x')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
+
 void jl_tokenize(JLTokenStream *token_stream, const char *str) {
   int mode = JSON_LEXER_MODE_NORMAL;
   int str_ptr = 0;
@@ -48,7 +54,6 @@ void jl_tokenize(JLTokenStream *token_stream, const char *str) {
   char *store = calloc(1, sizeof(char) * STORE_SIZE);
 
   while (str_ptr < strlen(str)) {
-    printf("mode: %d, str_ptr: %d, str len: %d\n", mode, str_ptr, strlen(str));
     switch (mode) {
     case JSON_LEXER_MODE_NORMAL:
       if (__is_separator(str[str_ptr]) == 0)
@@ -70,6 +75,7 @@ void jl_tokenize(JLTokenStream *token_stream, const char *str) {
         __add_key_token(token_stream, store);
         __add_separator_token(token_stream, str[str_ptr]);
         str_ptr++;
+        char *store = calloc(1, sizeof(char) * STORE_SIZE);
         continue;
       }
 
