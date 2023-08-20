@@ -37,7 +37,7 @@ void string_push_char(String* str, char ch) {
     str->ptr[++str->length] = '\0';
 }
 
-void string_push_string(String *str, const char *other) {
+void string_append(String *str, const char *other) {
     size_t remaining_capacity = str->capacity - str->length;
     size_t other_length = strlen(other);
     if (remaining_capacity < other_length) { //expands the string when it has reached it's maximum capacity
