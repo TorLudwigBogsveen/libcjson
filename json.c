@@ -141,7 +141,7 @@ JStr __obj_to_str(JObject *obj) {
 
   for (int i = 0; i < obj->children; i++) {
     JStr kvp_string = __kvp_to_str(l_get_index(obj->data->first, i, 0));
-    string_push_string(&str, kvp_string);
+    string_append(&str, kvp_string);
 
     if (i != obj->children - 1)
       string_push_char(&str, ',');
