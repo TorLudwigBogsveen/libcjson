@@ -12,6 +12,9 @@ String new_string() {
 
 void delete_string(String *str) {
     free(str->ptr);
+    str->ptr = NULL;
+    str->length = 0;
+    str->capacity = 0;
 }
 
 String string_copy(const String str) {
