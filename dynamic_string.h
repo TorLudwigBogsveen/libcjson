@@ -35,7 +35,14 @@ void delete_string(String *str);
  *@param[in] str The string to copy
  *@return The copied string
  */
-String string_copy(String str);
+String string_copy(const String str);
+
+/**
+ *Clears a string
+ *Sets the strings length to zero and zeroes out the string ptr
+ *@param[in] str The string to clear
+ */
+void string_clear(String *str);
 
 /**
  *Allocates a new string with space for capacity characters

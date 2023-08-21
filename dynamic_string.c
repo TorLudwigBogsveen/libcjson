@@ -28,6 +28,11 @@ String string_copy(const String str) {
     return copy;
 }
 
+void string_clear(String *str) {
+    memset(str->ptr, 0, str->length * sizeof(char));
+    str->length = 0;
+}
+
 String string_with_capacity(size_t capacity) {
     String str = {0};
     str.ptr = malloc((capacity + 1) * sizeof(char)); // the plus 1 is for the null termination
@@ -50,7 +55,7 @@ void string_append(String *str, const char *other) {
     if (remaining_capacity < other_length) { //expands the string when it has reached it's maximum capacity
         string_reserve(str, other_length);
     }
-    memcpy(str->ptr + str->length, other, (str->capacity + 1 - str->length) * sizeof(char)); //Plus 1 is for the null terminator
+    memcpy(str->ptr + str->length, other, (other_length + 1) * sizeof(char)); //Plus 1 is for the null terminator
     str->length += other_length;
 }
 

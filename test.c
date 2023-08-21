@@ -4,6 +4,7 @@
 #include "list.h"
 #include "string.h"
 #include "vector.h"
+#include "dynamic_string.h"
 #include <stdio.h>
 
 #define TEST_OUTPUT_1                                                          \
@@ -48,6 +49,7 @@ void nested_get_test() {
 
 void obj_to_str_test() {
   // test obj to str
+  printf("%s\n", j_obj_to_str(obj));
   assert(strcmp(j_obj_to_str(obj), TEST_OUTPUT_1) == 0);
 }
 
@@ -62,6 +64,14 @@ void test_tokenizer() {
   jl_tokenize(&stream, "{\"x\":10, \"y\":20}");
   printf("poof2!");
   jl_print_token_stream(stream);
+}
+
+void test_string() {
+  String a = new_string();
+  for (int i = 0; i < 100; i++) {
+    string_append(&a, "abc");
+  }
+  printf("%s\n", a.ptr);
 }
 
 CREATE_VECTOR_TYPE(intVec, vecint, int)
@@ -81,5 +91,6 @@ int main(void) {
   test_iccorect_formated_json();
   test_tokenizer();
   test_vector();
+  test_string();
   return 0;
 }

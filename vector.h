@@ -22,7 +22,8 @@
     \
     name prefix##_new(); \
     void prefix##_delete(name *vec); \
-    name prefix##_copy(name vec); \
+    name prefix##_copy(const name vec); \
+    void prefix##_clear(name *vec); \
     name prefix##_with_capacity(size_t capacity); \
     void prefix##_push(name *vec, type item); \
     void prefix##_append(name *vec, type *arr, size_t arr_len); \
@@ -42,13 +43,17 @@
         vec->capacity = 0; \
     } \
     \
-    name prefix##_copy(name vec) { \
+    name prefix##_copy(const name vec) { \
         name copy = prefix##_with_capacity(vec.length); \
         copy.length = vec.length; \
         memcpy(copy.ptr, vec.ptr, vec.length * sizeof(type)); \
         return copy; \
     } \
     \
+    void prefix##_clear(name *vec) { \
+        memset(vec->ptr, 0, vec->length * sizeof(type)); \
+        vec->length = 0; \
+    } \
     name prefix##_with_capacity(size_t capacity) { \
         name vec = {0}; \
         vec.ptr = malloc(capacity * sizeof(type)); \
@@ -69,7 +74,7 @@
             prefix##_reserve(vec, other_len); \
         } \
         \
-        memcpy(vec->ptr + vec->length, other, (vec->capacity - vec->length) * sizeof(type)); \
+        memcpy(vec->ptr + vec->length, other, other_len * sizeof(type)); \
         vec->length += other_len; \
     } \
     \
