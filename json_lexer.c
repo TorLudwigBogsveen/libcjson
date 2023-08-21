@@ -2,6 +2,7 @@
 #include "malloc.h"
 #include <stdlib.h>
 #include <string.h>
+#include "dynamic_string.h"
 
 DEFINE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
 
@@ -35,19 +36,10 @@ int __is_separator(const char c) {
   return 1;
 }
 
-#define STORE_SIZE 1024
-
-// just nu så har vi samma minnes plats för alla värden som sparas i store
-// vilket gör att vi skriver över namn osv.
-//
-// det vi får : (1 '{')(1 '"')(3 'y')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
-// så det borde vara : (1 '{')(1 '"')(3 'x')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
-
 void jl_tokenize(JLTokenStream *token_stream, const char *str) {
   int mode = JSON_LEXER_MODE_NORMAL;
   int str_ptr = 0;
-  int store_ptr = 0;
-  char *store = calloc(1, sizeof(char) * STORE_SIZE);
+  String store = new_string();
 
   while (str_ptr < strlen(str)) {
     switch (mode) {
@@ -67,16 +59,14 @@ void jl_tokenize(JLTokenStream *token_stream, const char *str) {
       if (__is_separator(str[str_ptr]) == 0 &&
           str[str_ptr] == JSON_LEXER_SEPARATOR_QM) {
         mode = JSON_LEXER_MODE_NORMAL;
-        store_ptr = 0;
-        __add_key_token(token_stream, store);
+        __add_key_token(token_stream, store.ptr);
+        store = new_string();
         __add_separator_token(token_stream, str[str_ptr]);
         str_ptr++;
-        char *store = calloc(1, sizeof(char) * STORE_SIZE);
         continue;
       }
 
-      store[store_ptr] = str[str_ptr];
-      store_ptr++;
+      string_push_char(&store, str[str_ptr]);
       break;
     }
     str_ptr++;
