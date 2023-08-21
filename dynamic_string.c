@@ -55,12 +55,13 @@ void string_append(String *str, const char *other) {
 }
 
 void string_reserve_exact(String *str, size_t additional) {
+    size_t remaining_capacity = str->capacity - str->length;
     //Early returns when the string capacity is already big enough
-    if (str->capacity - str->length > additional) {
+    if (remaining_capacity > additional) {
         return;
     }
 
-    str->capacity += additional;
+    str->capacity += additional - remaining_capacity;
     str->ptr = realloc(str->ptr, (str->capacity + 1) * sizeof(char)); // the plus 1 is for the null termination
 }
 
