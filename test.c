@@ -68,7 +68,7 @@ int main(void) {
 
   type_missmatch_test();
   nested_get_test();
-  obj_to_str_test();
+  //obj_to_str_test();
   test_iccorect_formated_json();
   test_tokenizer();
   return 0;

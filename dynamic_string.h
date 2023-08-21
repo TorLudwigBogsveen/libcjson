@@ -5,6 +5,8 @@
 #ifndef STRING
 #define STRING
 
+#include <stddef.h>
+
 typedef struct String {
     char *ptr;
     size_t length;
