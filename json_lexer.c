@@ -2,7 +2,7 @@
 #include "malloc.h"
 #include <stdlib.h>
 #include <string.h>
-#include <vcruntime.h>
+
 // FIX ME: dynamic token stream is required
 JLTokenStream *jl_new_token_stream() {
   JLTokenStream *token_stream = malloc(sizeof(JLTokenStream));
