@@ -64,13 +64,12 @@ void test_tokenizer() {
   jl_print_token_stream(stream);
 }
 
-#include <stdlib.h>
 CREATE_VECTOR_TYPE(int, int)
 
 void test_vector() {
-  //intVec a = new_intvec();
-  //vecint_push(&a, 640);
-  //printf("%d\n", a.ptr[0]);
+  intVec a = new_intvec();
+  vecint_push(&a, 640);
+  printf("%d\n", a.ptr[0]);
 }
 
 int main(void) {
