@@ -26,6 +26,7 @@
 #define JSON_LEXER_TOKEN_STRING 6
 #define JSON_LEXER_TOKEN_BOOLEAN 7
 #define JSON_LEXER_TOKEN_OBJ 8
+
 typedef enum JLTokenName {
   JNULL = 0,
   SEPARATOR = 1,

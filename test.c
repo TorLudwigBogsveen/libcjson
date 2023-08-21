@@ -64,17 +64,15 @@ void test_tokenizer() {
   jl_print_token_stream(stream);
 }
 
-CREATE_VECTOR_TYPE(int, int)
+CREATE_VECTOR_TYPE(intVec, vecint, int)
 
 void test_vector() {
-  intVec a = new_intvec();
+  intVec a = vecint_new();
   vecint_push(&a, 640);
-  printf("%d\n", a.ptr[0]);
+  assert(a.ptr[0] == 640);
 }
 
 int main(void) {
-  test_vector();
-  return 0;
   init();
 
   type_missmatch_test();
@@ -82,5 +80,6 @@ int main(void) {
   obj_to_str_test();
   test_iccorect_formated_json();
   test_tokenizer();
+  test_vector();
   return 0;
 }
