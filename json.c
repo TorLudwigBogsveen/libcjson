@@ -1,111 +1,126 @@
 #include "json.h"
 #include "dynamic_string.h"
-#include "list.h"
 #include "malloc.h"
 #include "stdio.h"
 #include "string.h"
 
-
+DEFINE_VECTOR_TYPE(JObject, j, JKVPair)
 
 JObject *j_new_object() {
   JObject *obj = (JObject *)malloc(sizeof(JObject));
-  obj->children = 0;
-  obj->data = l_new_list();
+  *obj = j_new();
   return obj;
 }
 
-int __add(JObject *object, JStr key, void *value, JType type) {
-  JKVPair *kvp = (JKVPair *)malloc(sizeof(JKVPair));
-  kvp->type = type;
-  kvp->key = key;
-  kvp->value = value;
-  int ret = l_append(object->data, (void *)kvp);
-
-  if (ret == 0)
-    object->children += 1;
-
-  return ret;
+void __add(JObject *object, JStr key, JValue value, JType type) {
+  JKVPair kvp;
+  kvp.type = type;
+  kvp.key = key;
+  kvp.value = value;
+  j_push(object, kvp);
 }
 
-void *__get(JObject *object, JStr key, JType type) {
-  int counter = 0;
-  LNode *current = object->data->first;
-  while (counter < object->children) {
-    JKVPair *kvp = current->value;
+JValue __get(JObject *object, JStr key, JType type, JBool* has_error) {
+  for (int i = 0; i < object->length; i++) {
+    JKVPair *kvp = &object->ptr[i];
     if (strcmp(kvp->key, key) == 0)
 
-      // type checking, returns -1 if the types don't match.
-      return kvp->type == type ? kvp->value : (void *)-1;
-    current = current->next;
-    counter++;
+      // type checking, returns UNDEFINED if the types don't match.
+      if (kvp->type == type) {
+        return kvp->value;
+      } else {
+        *has_error = T;
+
+        JValue error;
+        error.error = J_TYPE_MISMATCH;
+        return error;
+      }
   }
-  return (void *)-1;
+
+  *has_error = T;
+
+  JValue error;
+  error.error = J_UNDEFINED;
+  return error;
 }
 
 // Section for all "add" functions
 
-int j_add_int(JObject *object, JStr key, int value) {
-  return __add(object, key, (void *)(size_t)value, JSON_TYPE_NUM);
+void j_add_int(JObject *object, JStr key, int value) {
+  JValue j_value;
+  j_value.integer = value;
+  __add(object, key, j_value, JSON_TYPE_NUM);
 }
 
-int j_add_str(JObject *object, JStr key, JStr value) {
-  return __add(object, key, (void *)(size_t)value, JSON_TYPE_STR);
+void j_add_str(JObject *object, JStr key, JStr value) {
+  JValue j_value;
+  j_value.string = value;
+  __add(object, key, j_value, JSON_TYPE_STR);
 }
 
-int j_add_obj(JObject *object, JStr key, JObject *value) {
-  return __add(object, key, (void *)(size_t)value, JSON_TYPE_OBJECT);
+void j_add_obj(JObject *object, JStr key, JObject *value) {
+  JValue j_value;
+  j_value.object = value;
+  __add(object, key, j_value, JSON_TYPE_OBJECT);
 }
 
-int j_add_bool(JObject *object, JStr key, JBool value) {
-  return __add(object, key, (void *)(size_t)value, JSON_TYPE_BOOL);
+void j_add_bool(JObject *object, JStr key, JBool value) {
+  JValue j_value;
+  j_value.boolean = value;
+  __add(object, key, j_value, JSON_TYPE_BOOL);
 };
 
-int j_add_double(JObject *object, JStr key, double value) {
-  double *n = malloc(sizeof(double));
-  *n = value;
-  return __add(object, key, (void *)n, JSON_TYPE_DOUBLE);
+void j_add_double(JObject *object, JStr key, double value) {
+  JValue j_value;
+  j_value.decimal = value;
+  __add(object, key, j_value, JSON_TYPE_DOUBLE);
 };
 
 // Section for all "Get" functions
 
-JBool *j_get_bool(JObject *object, JStr key) {
-  void *ret = __get(object, key, JSON_TYPE_BOOL);
-  if ((int)(size_t)ret != -1)
-    return (JBool *)ret;
+JBool j_get_bool(JObject *object, JStr key) {
+  JBool has_error = F;
+  JValue ret = __get(object, key, JSON_TYPE_BOOL, &has_error);
+  if (!has_error)
+    return ret.boolean;
   printf("Type missmatch!\n");
-  return (JBool *)ret;
+  return F;
 }
 
 int j_get_int(JObject *object, JStr key) {
-  void *ret = __get(object, key, JSON_TYPE_NUM);
-  if ((int)(size_t)ret != -1)
-    return (int)(size_t)ret;
+  JBool has_error = F;
+  JValue ret = __get(object, key, JSON_TYPE_NUM, &has_error);
+  if (!has_error)
+    return ret.integer;
   printf("Type missmatch!\n");
-  return (int)(size_t)ret;
+  return 0;
 }
 
 JStr j_get_str(JObject *object, JStr key) {
-  void *ret = __get(object, key, JSON_TYPE_STR);
-  if ((int)(size_t)ret != -1)
-    return (JStr)ret;
+  JBool has_error = F;
+  JValue ret = __get(object, key, JSON_TYPE_STR, &has_error);
+  if (!has_error)
+    return ret.string;
   printf("Type missmatch!\n");
-  return (JStr)ret;
+  return "";
 }
 
 JObject *j_get_obj(JObject *object, JStr key) {
-  void *ret = __get(object, key, JSON_TYPE_OBJECT);
-  if ((int)(size_t)ret != -1)
-    return (JObject *)ret;
+  JBool has_error = F;
+  JValue ret = __get(object, key, JSON_TYPE_OBJECT, &has_error);
+  if (!has_error)
+    return ret.object;
   printf("Type missmatch!\n");
-  return (JObject *)ret;
+  return NULL;
 }
 
 double j_get_double(JObject *object, JStr key) {
-  void *ret = __get(object, key, JSON_TYPE_DOUBLE);
-  if ((int)(size_t)ret != -1)
-    return *(double *)ret;
+  JBool has_error = F;
+  JValue ret = __get(object, key, JSON_TYPE_DOUBLE, &has_error);
+  if (!has_error)
+    return ret.decimal;
   printf("Type missmatch!\n");
-  return *(double *)ret;
+  return 0.0;
 }
 
 // stringify section
@@ -114,21 +129,21 @@ JStr __kvp_to_str(JKVPair *kvp) {
   String str = new_string();
   switch (kvp->type) {
   case STR:
-    string_printf(&str, "\"%s\": \"%s\"", kvp->key, (char *)(size_t)kvp->value);
+    string_printf(&str, "\"%s\": \"%s\"", kvp->key, kvp->value.string);
     break;
   case NUM:
-    string_printf(&str, "\"%s\": %d", kvp->key, (int)(size_t)kvp->value);
+    string_printf(&str, "\"%s\": %d", kvp->key, kvp->value.integer);
     break;
   case BOOL:
     string_printf(&str, "\"%s\": %s", kvp->key,
-                  ((JBool)(size_t)kvp->value == TRUE ? "true" : "false"));
+                  (kvp->value.boolean == TRUE ? "true" : "false"));
     break;
   case OBJECT:
-    string_printf(&str, "\"%s\": %s", kvp->key, __obj_to_str(kvp->value));
+    string_printf(&str, "\"%s\": %s", kvp->key, __obj_to_str(kvp->value.object));
     break;
 
   case DOUBLE:
-    string_printf(&str, "\"%s\": %lf", kvp->key, *(double *)kvp->value);
+    string_printf(&str, "\"%s\": %lf", kvp->key, kvp->value.decimal);
     break;
   }
 
@@ -139,11 +154,11 @@ JStr __obj_to_str(JObject *obj) {
   String str = new_string();
   string_push_char(&str, '{');
 
-  for (int i = 0; i < obj->children; i++) {
-    JStr kvp_string = __kvp_to_str(l_get_index(obj->data->first, i, 0));
+  for (int i = 0; i < obj->length; i++) {
+    JStr kvp_string = __kvp_to_str(&obj->ptr[i]);
     string_append(&str, kvp_string);
 
-    if (i != obj->children - 1)
+    if (i != obj->length - 1)
       string_push_char(&str, ',');
 
     free(kvp_string);
@@ -189,7 +204,7 @@ int __validate_brackets(const JStr json_str) {
 }
 
 JObject *j_str_to_obj(const JStr json_str) {
-  JObject *obj = (JObject *)malloc(sizeof(JObject));
+  JObject *obj = j_new_object();
 
   // early return if there is an odd number of brackets
   if (__validate_brackets(json_str) != 0)

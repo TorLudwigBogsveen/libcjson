@@ -1,7 +1,6 @@
 #include "assert.h"
 #include "json.h"
 #include "json_lexer.h"
-#include "list.h"
 #include "string.h"
 #include "vector.h"
 #include "dynamic_string.h"
@@ -39,7 +38,7 @@ void init() {
 void type_missmatch_test() {
   // test the type missmatch
   printf("This should print a \"Type missmatch!\" error to the terminal!\n");
-  assert((int)(size_t)j_get_obj(obj, "inhabs") == -1);
+  assert(j_get_obj(obj, "inhabs") == NULL);
 }
 
 void nested_get_test() {
