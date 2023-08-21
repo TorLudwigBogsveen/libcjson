@@ -43,16 +43,19 @@ typedef enum JLTokenName {
 } JLTokenName;
 
 
+typedef union JLValue {
+  char character;
+  char *string;
+} JLValue;
 
-// unsure what the type of the token_value should be
 typedef struct JLToken {
   JLTokenName token_name;
-  void *token_value;
+  JLValue token_value;
 } JLToken;
 
 DECLARE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
 
-JLToken jl_new_token(JLTokenName token_name, void *token_value);
+JLToken jl_new_token(JLTokenName token_name, JLValue token_value);
 JLTokenStream jl_new_token_stream();
 
 void jl_tokenize(JLTokenStream *token_stream, const char *str);
