@@ -25,9 +25,9 @@ void string_push_char(String *str, char ch);
 
 void string_append(String *str, const char *other);
 
-void string_reserve(String *str, size_t capacity);
+void string_reserve(String *str, size_t additional);
 
-void string_expand(String *str, size_t minimum_capacity);
+void string_reserve_exact(String *str, size_t additional);
 
 int string_printf(String *str, char const* const _Format, ...);
 

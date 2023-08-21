@@ -38,7 +38,7 @@ String string_with_capacity(size_t capacity) {
 
 void string_push_char(String* str, char ch) {
     if (str->length == str->capacity) {
-        string_expand(str, 0);
+        string_reserve(str, 1);
     }
     str->ptr[str->length] = ch;
     str->ptr[++str->length] = '\0';
@@ -48,25 +48,25 @@ void string_append(String *str, const char *other) {
     size_t remaining_capacity = str->capacity - str->length;
     size_t other_length = strlen(other);
     if (remaining_capacity < other_length) { //expands the string when it has reached it's maximum capacity
-        string_expand(str, str->length + other_length);
+        string_reserve(str, other_length);
     }
     memcpy(str->ptr + str->length, other, (str->capacity + 1 - str->length) * sizeof(char)); //Plus 1 is for the null terminator
     str->length += other_length;
 }
 
-void string_reserve(String *str, size_t capacity) {
+void string_reserve_exact(String *str, size_t additional) {
     //Early returns when the string capacity is already big enough
-    if (str->capacity > capacity) {
+    if (str->capacity - str->length > additional) {
         return;
     }
 
-    str->ptr = realloc(str->ptr, (capacity + 1) * sizeof(char)); // the plus 1 is for the null termination
-    str->capacity = capacity;
+    str->capacity += additional;
+    str->ptr = realloc(str->ptr, (str->capacity + 1) * sizeof(char)); // the plus 1 is for the null termination
 }
 
-void string_expand(String *str, size_t minimum_capacity) {
-    size_t new_capacity = STRING_MAX(str->capacity + str->capacity / 2 + 8, minimum_capacity);
-    string_reserve(str, new_capacity);
+void string_reserve(String *str, size_t additional) {
+    size_t new_capacity = STRING_MAX(str->capacity / 2 + 8, additional);
+    string_reserve_exact(str, new_capacity);
 } 
 
 int string_printf(String *str, char const* const _Format, ...) {
@@ -74,7 +74,7 @@ int string_printf(String *str, char const* const _Format, ...) {
     va_list _ArgList;
     va_start(_ArgList, _Format);
     int length = vsnprintf(NULL,  0, _Format, _ArgList);
-    string_expand(str, str->length + length);
+    string_reserve(str, length);
     _Result = vsnprintf(str->ptr + str->length,  str->capacity + 1 - str->length, _Format, _ArgList);
     va_end(_ArgList);
     return _Result;
