@@ -5,6 +5,8 @@
 #define JSON_LEXER_H
 
 #include <stdio.h>
+#include "vector.h"
+
 #define JSON_LEXER_SEPARATORS "{}[]\",:"
 #define JSON_LEXER_SEPARATOR_LCB JSON_LEXER_SEPARATORS[0]
 #define JSON_LEXER_SEPARATOR_RCB JSON_LEXER_SEPARATORS[1]
@@ -48,16 +50,13 @@ typedef struct JLToken {
   void *token_value;
 } JLToken;
 
-typedef struct JLTokenStream {
-  JLToken **tokens;
-  int size;
-} JLTokenStream;
+DECLARE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
 
-JLToken *jl_new_token(JLTokenName token_name, void *token_value);
-JLTokenStream *jl_new_token_stream();
+JLToken jl_new_token(JLTokenName token_name, void *token_value);
+JLTokenStream jl_new_token_stream();
 
 void jl_tokenize(JLTokenStream *token_stream, const char *str);
 
-void jl_print_token_stream(JLTokenStream *token_stream);
+void jl_print_token_stream(const JLTokenStream token_stream);
 
 #endif
