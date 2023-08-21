@@ -49,7 +49,6 @@ void nested_get_test() {
 
 void obj_to_str_test() {
   // test obj to str
-  printf("%s\n", j_obj_to_str(obj));
   assert(strcmp(j_obj_to_str(obj), TEST_OUTPUT_1) == 0);
 }
 
@@ -68,10 +67,10 @@ void test_tokenizer() {
 
 void test_string() {
   String a = new_string();
-  for (int i = 0; i < 100; i++) {
-    string_append(&a, "abc");
+  for (int i = 0; i < 8; i++) {
+    string_printf(&a, "%d ", i * 2);
   }
-  printf("%s\n", a.ptr);
+  printf("\n%s\n", a.ptr);
 }
 
 CREATE_VECTOR_TYPE(intVec, vecint, int)

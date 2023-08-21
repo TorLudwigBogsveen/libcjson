@@ -79,13 +79,19 @@
     } \
     \
     void prefix##_reserve(name *vec, size_t additional) { \
+        size_t remaining_capacity = vec->capacity - vec->length;\
+        /*Early returns when the vec capacity is already big enough*/ \
+        if (remaining_capacity >= additional) { \
+            return; \
+        } \
+        \
         size_t new_capacity = VECTOR_MAX(vec->capacity / 2 + 8, additional); \
         prefix##_reserve_exact(vec, new_capacity); \
     } \
     void prefix##_reserve_exact(name *vec, size_t additional) { \
         size_t remaining_capacity = vec->capacity - vec->length;\
         /*Early returns when the vec capacity is already big enough*/ \
-        if (remaining_capacity > additional) { \
+        if (remaining_capacity >= additional) { \
             return; \
         } \
         \
