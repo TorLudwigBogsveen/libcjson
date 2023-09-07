@@ -108,7 +108,7 @@ double j_get_double(JObject *object, JStr key) {
   return *(double *)ret;
 }
 
-// strigify section
+// stringify section
 
 JStr __kvp_to_str(JKVPair *kvp) {
   String str = new_string();

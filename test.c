@@ -3,6 +3,8 @@
 #include "json_lexer.h"
 #include "list.h"
 #include "string.h"
+#include "vector.h"
+#include "dynamic_string.h"
 #include <stdio.h>
 
 #define TEST_OUTPUT_1                                                          \
@@ -56,11 +58,27 @@ void test_iccorect_formated_json() {
 }
 
 void test_tokenizer() {
-  JLTokenStream *stream = jl_new_token_stream();
+  JLTokenStream stream = jl_new_token_stream();
   printf("poof1!");
-  jl_tokenize(stream, "{\"x\":10, \"y\":20}");
+  jl_tokenize(&stream, "{\"x\":10, \"y\":20}");
   printf("poof2!");
   jl_print_token_stream(stream);
+}
+
+void test_string() {
+  String a = new_string();
+  for (int i = 0; i < 8; i++) {
+    string_printf(&a, "%d ", i * 2);
+  }
+  printf("\n%s\n", a.ptr);
+}
+
+CREATE_VECTOR_TYPE(intVec, vecint, int)
+
+void test_vector() {
+  intVec a = vecint_new();
+  vecint_push(&a, 640);
+  assert(a.ptr[0] == 640);
 }
 
 int main(void) {
@@ -71,5 +89,7 @@ int main(void) {
   obj_to_str_test();
   test_iccorect_formated_json();
   test_tokenizer();
+  test_vector();
+  test_string();
   return 0;
 }

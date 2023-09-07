@@ -28,6 +28,11 @@ String string_copy(const String str) {
     return copy;
 }
 
+void string_clear(String *str) {
+    memset(str->ptr, 0, str->length * sizeof(char));
+    str->length = 0;
+}
+
 String string_with_capacity(size_t capacity) {
     String str = {0};
     str.ptr = malloc((capacity + 1) * sizeof(char)); // the plus 1 is for the null termination
@@ -50,14 +55,14 @@ void string_append(String *str, const char *other) {
     if (remaining_capacity < other_length) { //expands the string when it has reached it's maximum capacity
         string_reserve(str, other_length);
     }
-    memcpy(str->ptr + str->length, other, (str->capacity + 1 - str->length) * sizeof(char)); //Plus 1 is for the null terminator
+    memcpy(str->ptr + str->length, other, (other_length + 1) * sizeof(char)); //Plus 1 is for the null terminator
     str->length += other_length;
 }
 
 void string_reserve_exact(String *str, size_t additional) {
     size_t remaining_capacity = str->capacity - str->length;
     //Early returns when the string capacity is already big enough
-    if (remaining_capacity > additional) {
+    if (remaining_capacity >= additional) {
         return;
     }
 
@@ -66,17 +71,30 @@ void string_reserve_exact(String *str, size_t additional) {
 }
 
 void string_reserve(String *str, size_t additional) {
+    size_t remaining_capacity = str->capacity - str->length;
+    //Early returns when the string capacity is already big enough
+    if (remaining_capacity >= additional) {
+        return;
+    }
+
     size_t new_capacity = STRING_MAX(str->capacity / 2 + 8, additional);
     string_reserve_exact(str, new_capacity);
 } 
 
 int string_printf(String *str, char const* const _Format, ...) {
-    int _Result;
     va_list _ArgList;
     va_start(_ArgList, _Format);
     int length = vsnprintf(NULL,  0, _Format, _ArgList);
     string_reserve(str, length);
-    _Result = vsnprintf(str->ptr + str->length,  str->capacity + 1 - str->length, _Format, _ArgList);
     va_end(_ArgList);
+        
+    va_start(_ArgList, _Format);
+    int _Result;
+    _Result = vsnprintf(str->ptr + str->length,  str->capacity + 1 - str->length, _Format, _ArgList);
+    if (_Result > 0) {
+        str->length += _Result;
+    }
+    va_end(_ArgList);
+
     return _Result;
 }

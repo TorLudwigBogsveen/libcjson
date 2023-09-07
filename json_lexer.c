@@ -2,32 +2,29 @@
 #include "malloc.h"
 #include <stdlib.h>
 #include <string.h>
+#include "dynamic_string.h"
 
-// FIX ME: dynamic token stream is required
-JLTokenStream *jl_new_token_stream() {
-  JLTokenStream *token_stream = malloc(sizeof(JLTokenStream));
-  token_stream->size = 0;
-  token_stream->tokens = malloc(sizeof(JLToken *) * 1000);
-  return token_stream;
+DEFINE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
+
+JLTokenStream jl_new_token_stream() {
+  return jl_new();
 }
 
-JLToken *jl_new_token(JLTokenName token_name, void *token_value) {
-  JLToken *token = malloc(sizeof(token));
-  token->token_name = token_name;
-  token->token_value = token_value;
+JLToken jl_new_token(JLTokenName token_name, void *token_value) {
+  JLToken token;
+  token.token_name = token_name;
+  token.token_value = token_value;
 
   return token;
 }
 
 void __add_separator_token(JLTokenStream *token_stream, const char c) {
-  JLToken *token = jl_new_token(JSON_LEXER_TOKEN_SEPARATOR, (void *)(size_t)c);
-  token_stream->tokens[token_stream->size] = token;
-  token_stream->size++;
+  JLToken token = jl_new_token(JSON_LEXER_TOKEN_SEPARATOR, (void *)(size_t)c);
+  jl_push(token_stream, token);
 }
 void __add_key_token(JLTokenStream *token_stream, const char *str) {
-  JLToken *token = jl_new_token(JSON_LEXER_TOKEN_KEY, (void *)str);
-  token_stream->tokens[token_stream->size] = token;
-  token_stream->size++;
+  JLToken token = jl_new_token(JSON_LEXER_TOKEN_KEY, (void *)str);
+  jl_push(token_stream, token);
 }
 
 int __is_separator(const char c) {
@@ -39,19 +36,10 @@ int __is_separator(const char c) {
   return 1;
 }
 
-#define STORE_SIZE 1024
-
-// just nu så har vi samma minnes plats för alla värden som sparas i store
-// vilket gör att vi skriver över namn osv.
-//
-// det vi får : (1 '{')(1 '"')(3 'y')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
-// så det borde vara : (1 '{')(1 '"')(3 'x')(1 '"')(1 ':')(1 ',')(1 '"')(3 'y')(1 '"')(1 ':')(1 '}')
-
 void jl_tokenize(JLTokenStream *token_stream, const char *str) {
   int mode = JSON_LEXER_MODE_NORMAL;
   int str_ptr = 0;
-  int store_ptr = 0;
-  char *store = calloc(1, sizeof(char) * STORE_SIZE);
+  String store = new_string();
 
   while (str_ptr < strlen(str)) {
     switch (mode) {
@@ -71,31 +59,29 @@ void jl_tokenize(JLTokenStream *token_stream, const char *str) {
       if (__is_separator(str[str_ptr]) == 0 &&
           str[str_ptr] == JSON_LEXER_SEPARATOR_QM) {
         mode = JSON_LEXER_MODE_NORMAL;
-        store_ptr = 0;
-        __add_key_token(token_stream, store);
+        __add_key_token(token_stream, store.ptr);
+        store = new_string();
         __add_separator_token(token_stream, str[str_ptr]);
         str_ptr++;
-        char *store = calloc(1, sizeof(char) * STORE_SIZE);
         continue;
       }
 
-      store[store_ptr] = str[str_ptr];
-      store_ptr++;
+      string_push_char(&store, str[str_ptr]);
       break;
     }
     str_ptr++;
   }
 }
 
-void jl_print_token_stream(JLTokenStream *token_stream) {
-  for (int i = 0; i < token_stream->size; i++) {
-    if (token_stream->tokens[i]->token_name == JSON_LEXER_TOKEN_KEY ||
-        token_stream->tokens[i]->token_name == JSON_LEXER_TOKEN_STRING) {
-      printf("(%d '%s')", token_stream->tokens[i]->token_name,
-             (char *)token_stream->tokens[i]->token_value);
+void jl_print_token_stream(const JLTokenStream token_stream) {
+  for (int i = 0; i < token_stream.length; i++) {
+    if (token_stream.ptr[i].token_name == JSON_LEXER_TOKEN_KEY ||
+        token_stream.ptr[i].token_name == JSON_LEXER_TOKEN_STRING) {
+      printf("(%d '%s')", token_stream.ptr[i].token_name,
+             (char *)token_stream.ptr[i].token_value);
 
     } else
-      printf("(%d '%c')", token_stream->tokens[i]->token_name,
-             (char)(size_t)token_stream->tokens[i]->token_value);
+      printf("(%d '%c')", token_stream.ptr[i].token_name,
+             (char)(size_t)token_stream.ptr[i].token_value);
   }
 }
