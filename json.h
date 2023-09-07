@@ -4,7 +4,7 @@
 #ifndef JSON_H
 #define JSON_H
 
-#include "list.h"
+#include "vector.h"
 
 #define JSON_L_CB '{'
 #define JSON_R_CB '}'
@@ -22,8 +22,10 @@
 #define TRUE !0
 #define FALSE 0
 
+
 typedef char *JStr;
 typedef enum JBool { T = !0, F = 0 } JBool;
+typedef enum JError { J_UNDEFINED, J_TYPE_MISMATCH } JError;
 
 typedef enum {
   BOOL = JSON_TYPE_BOOL,
@@ -36,16 +38,22 @@ typedef enum {
 struct JKVPair;
 struct JObject;
 
+typedef union JValue {
+  JBool boolean;
+  int integer;
+  double decimal;
+  struct JObject* object;
+  JStr string;
+  JError error;
+} JValue;
+
 typedef struct JKVPair {
   JType type;
   JStr key;
-  void *value;
+  JValue value;
 } JKVPair;
 
-typedef struct JObject {
-  int children;
-  LList *data;
-} JObject;
+DECLARE_VECTOR_TYPE(JObject, j, JKVPair)
 
 /**
  *Allaocates memmoryspace for a new json object and returns the pointer
@@ -53,13 +61,13 @@ typedef struct JObject {
  */
 JObject *j_new_object();
 
-int j_add_bool(JObject *object, JStr key, JBool value);
-int j_add_int(JObject *object, JStr key, int value);
-int j_add_str(JObject *object, JStr key, JStr value);
-int j_add_obj(JObject *object, JStr key, JObject *value);
-int j_add_double(JObject *object, JStr key, double value);
+void j_add_bool(JObject *object, JStr key, JBool value);
+void j_add_int(JObject *object, JStr key, int value);
+void j_add_str(JObject *object, JStr key, JStr value);
+void j_add_obj(JObject *object, JStr key, JObject *value);
+void j_add_double(JObject *object, JStr key, double value);
 
-JBool *j_get_bool(JObject *object, JStr key);
+JBool j_get_bool(JObject *object, JStr key);
 int j_get_int(JObject *object, JStr key);
 JStr j_get_str(JObject *object, JStr key);
 JObject *j_get_obj(JObject *object, JStr key);

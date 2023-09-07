@@ -10,7 +10,7 @@ JLTokenStream jl_new_token_stream() {
   return jl_new();
 }
 
-JLToken jl_new_token(JLTokenName token_name, void *token_value) {
+JLToken jl_new_token(JLTokenName token_name, JLValue token_value) {
   JLToken token;
   token.token_name = token_name;
   token.token_value = token_value;
@@ -19,11 +19,15 @@ JLToken jl_new_token(JLTokenName token_name, void *token_value) {
 }
 
 void __add_separator_token(JLTokenStream *token_stream, const char c) {
-  JLToken token = jl_new_token(JSON_LEXER_TOKEN_SEPARATOR, (void *)(size_t)c);
+  JLValue value;
+  value.character = c;
+  JLToken token = jl_new_token(JSON_LEXER_TOKEN_SEPARATOR, value);
   jl_push(token_stream, token);
 }
 void __add_key_token(JLTokenStream *token_stream, const char *str) {
-  JLToken token = jl_new_token(JSON_LEXER_TOKEN_KEY, (void *)str);
+  JLValue value;
+  value.string = str;
+  JLToken token = jl_new_token(JSON_LEXER_TOKEN_KEY, value);
   jl_push(token_stream, token);
 }
 
@@ -78,10 +82,10 @@ void jl_print_token_stream(const JLTokenStream token_stream) {
     if (token_stream.ptr[i].token_name == JSON_LEXER_TOKEN_KEY ||
         token_stream.ptr[i].token_name == JSON_LEXER_TOKEN_STRING) {
       printf("(%d '%s')", token_stream.ptr[i].token_name,
-             (char *)token_stream.ptr[i].token_value);
+             token_stream.ptr[i].token_value.string);
 
     } else
       printf("(%d '%c')", token_stream.ptr[i].token_name,
-             (char)(size_t)token_stream.ptr[i].token_value);
+             token_stream.ptr[i].token_value.character);
   }
 }
