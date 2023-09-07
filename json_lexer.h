@@ -23,7 +23,7 @@
 
 #define JSON_LEXER_TOKEN_NULL 0
 #define JSON_LEXER_TOKEN_SEPARATOR 1
-#define JSON_LEXER_TOKEN_KEYS 2
+#define JSON_LEXER_TOKEN_KEY 2
 
 typedef enum JLTokenName
 {
@@ -52,6 +52,6 @@ JLTokenStream jl_new_token_stream();
 
 int jl_tokenize(JLTokenStream *token_stream, const char *str);
 
-// void jl_print_token_stream(const JLTokenStream token_stream);
+void jl_print_token_stream(const JLTokenStream token_stream);
 
 #endif
