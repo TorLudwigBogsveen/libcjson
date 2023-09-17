@@ -50,7 +50,7 @@ DECLARE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
 JLToken jl_new_token(JLTokenName token_name, JLValue token_value);
 JLTokenStream jl_new_token_stream();
 
-int jl_tokenize(JLTokenStream *token_stream, const char *str);
+int jl_tokenize(JLTokenStream *token_stream, const char *json_str);
 
 // void jl_print_token_stream(const JLTokenStream token_stream);
 

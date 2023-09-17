@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dynamic_string.h"
+#include <stdio.h>
+#include <string.h>
 
 DEFINE_VECTOR_TYPE(JLTokenStream, jl, JLToken)
 
@@ -30,52 +32,49 @@ void __add_key_token(JLTokenStream *token_stream, const char *str)
 {
 }
 
-int jl_tokenize(JLTokenStream *token_stream, const char *str)
+//kod tagen från https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/
+// Nested-Tokenization in C
+
+int jl_tokenize(JLTokenStream *token_stream, const char *json_str)
 {
-  int mode = JSON_LEXER_MODE_FIND_OBJECT_START_BRACKET;
-  int str_ptr = 0;
-  String store = new_string();
-  while (str_ptr < strlen(str))
+  printf("%s\n",json_str);
+
+  printf("hello world\n");
+
+  char *str = malloc(sizeof(json_str));
+
+  printf("hello world\n");
+
+  strcpy(str, json_str);
+
+  printf("hello world\n");
+
+  const char outer_delimiters[] = ",";
+  const char inner_delimiters[] = ":";
+
+  char *token;
+  char *outer_saveptr = NULL;
+  char *inner_saveptr = NULL;
+
+  token = strtok_s(str, outer_delimiters, &outer_saveptr);
+
+  while (token != NULL)
   {
-    switch (mode)
+    printf("Outer Token: %s\n", token);
+
+    char *inner_token = strtok_s(
+        token, inner_delimiters, &inner_saveptr);
+
+    while (inner_token != NULL)
     {
-    case JSON_LEXER_MODE_FIND_OBJECT_START_BRACKET:
-      if (str[str_ptr] != '{')
-      {
-        printf("formatting error");
-        return -1;
-      }
-
-      __add_separator_token(token_stream, str[str_ptr]);
-      mode = JSON_LEXER_MODE_FIND_KEY;
-
-      break;
-    case JSON_LEXER_MODE_FIND_KEY:
-      if (str[str_ptr] == '\"')
-      {
-        char *begin = str + str_ptr + 1;
-        char *end = strchr(begin, '\"');
-        if (end == NULL)
-        {
-          printf("Could not find closing \" for key");
-          return 0;
-        }
-
-        //__add_key_token(token_stream, )
-      }
-      else
-      {
-        printf("formatting error");
-        return 0;
-      }
-      break;
-    case JSON_LEXER_MODE_VALUE:
-
-      break;
-    default:
-      break;
+      printf("Inner Token: %s\n", inner_token);
+      inner_token = strtok_s(NULL, inner_delimiters,
+                             &inner_saveptr);
     }
 
-    str_ptr++;
+    token = strtok_s(NULL, outer_delimiters,
+                     &outer_saveptr);
   }
+
+  return 0;
 }
