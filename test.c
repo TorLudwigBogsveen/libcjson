@@ -1,6 +1,6 @@
 #include "assert.h"
 #include "json.h"
-#include "json_lexer.h"
+#include "json_tokenizer.h"
 #include "string.h"
 #include "vector.h"
 #include "dynamic_string.h"
@@ -63,10 +63,12 @@ void test_iccorect_formated_json()
 
 void test_tokenizer()
 {
-  JLTokenStream stream = jl_new_token_stream();
-  printf("poof1!");
-  jl_tokenize(&stream, "{\"x\":10, \"y\":20, \"z\": {\"1\": 1, \"2\":2}}");
-  printf("poof2!");
+  String json = new_string();
+  string_append(&json, "{\"x\":10, \"y\":\"this is a small test\", \"z\": {\"1\": 1, \"2\":2}}");
+  JTTokenList token_list = jt_new_token_list();
+  jt_tokenizer(&token_list, json);
+  jt_print_token_list(&token_list);
+
   // jl_print_token_stream(stream);
 }
 

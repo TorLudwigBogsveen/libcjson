@@ -1,6 +1,6 @@
 CC=clang
-CFILES=test.c json.c dynamic_string.c json_lexer.c
-OFILES=test.o json.o dynamic_string.o json_lexer.o
+CFILES=test.c json.c dynamic_string.c json_tokenizer.c
+OFILES=test.o json.o dynamic_string.o json_tokenizer.o
 
 build: $(OFILES)
 	$(CC) $(OFILES)

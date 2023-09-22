@@ -90,4 +90,6 @@ void string_reserve_exact(String *str, size_t additional);
  */
 int string_printf(String *str, char const* const _Format, ...);
 
+
+
 #endif
