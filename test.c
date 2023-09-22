@@ -64,7 +64,7 @@ void test_iccorect_formated_json()
 void test_tokenizer()
 {
   String json = new_string();
-  string_append(&json, "{\"x\":10, \"y\":\"this is a small test\", \"z\": {\"1\": 1, \"2\":2}}");
+  string_append(&json, "{\"x\":10, \"y\":\"this is a \"small\" test\", \"z\": {\"1\": 1, \"2\":2}}");
   JTTokenList token_list = jt_new_token_list();
   jt_tokenizer(&token_list, json);
   jt_print_token_list(&token_list);

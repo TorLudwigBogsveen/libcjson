@@ -43,7 +43,7 @@ JTToken __jt_handle_word(String input, int pointer)
     int off = 0;
     JTToken token;
     String word = new_string();
-
+    // detta resulterar  i att om man har t.ex " i en text sträng så ses det som en separator, vilket resulterar i att man senare får pussla ihop strängen igen.
     while (!__jt_is_separator(input.ptr[pointer + off]))
     {
         string_push_char(&word, input.ptr[pointer + off]);
@@ -92,10 +92,10 @@ void jt_print_token_list(JTTokenList * token_list)
     for (int i = 0; i < token_list->length; i++)
     {
         if (token_list->ptr[i].type == JSON_TOKENIZER_TYPE_SEPARATOR)
-            printf("%-10s: ","SEPARATOR");
+            printf("%10s ","SEPARATOR");
 
         else if (token_list->ptr[i].type == JSON_TOKENIZER_TYPE_WORD)
-            printf("%-10s: ","WORD");
+            printf("%10s ","WORD");
 
         printf("(%s) \n", token_list->ptr[i].data.ptr);
     }
