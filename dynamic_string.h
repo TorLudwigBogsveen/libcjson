@@ -63,7 +63,23 @@ void string_push_char(String *str, char ch);
  *@param[out] str The string pointer object
  *@param[in] other The string to append at the end
  */
-void string_append(String *str, const char *other);
+void string_append(String* str, const char* other);
+
+/**
+ *Appends another string at the end of the dynamic string and expands if needed
+ *@param[out] str The string pointer object
+ *@param[out] other The char popped from the string
+ *@return if the string is empty this will return 0 and 1 if it returned a value
+ */
+int string_pop_front(String* str, char* ch);
+
+/**
+ *Appends another string at the end of the dynamic string and expands if needed
+ *@param[out] str The string pointer object
+ *@param[out] other The char popped from the string
+ *@return if the string is empty this will return 0 and 1 if it returned a value
+ */
+int string_pop_back(String* str, char* ch);
 
 /**
  *Reserves room for at least additional more characters
