@@ -13,11 +13,31 @@
 #define JSON_TOKENIZER_TYPE_SEPARATOR 1
 #define JSON_TOKENIZER_TYPE_WORD 2
 
+typedef enum JTTokenType {
+  JSON_TOKEN_TYPE_LEFT_CURLY,
+  JSON_TOKEN_TYPE_RIGHT_CURLY,
+  JSON_TOKEN_TYPE_LEFT_SQUARE,
+  JSON_TOKEN_TYPE_RIGHT_SQUARE,
+  JSON_TOKEN_TYPE_QUOTE,
+  JSON_TOKEN_TYPE_COMMA,
+  JSON_TOKEN_TYPE_COLON,
+  // JSON_TOKEN_TYPE_LEFT_PARENS,
+  // JSON_TOKEN_TYPE_RIGHT_PARENS
+} JTTokenType;
+
+typedef struct Unit{} Unit;
+
+typedef union JTTokenValue {
+  String string;
+  char ch;
+  Unit nothing;
+} JTTokenValue;
+
 
 typedef struct JTToken
 {
-  int type;
-  String data;
+  JTTokenType type;
+  JTTokenValue data;
 } JTToken;
 
 DECLARE_VECTOR_TYPE(JTTokenList, jt, JTToken);

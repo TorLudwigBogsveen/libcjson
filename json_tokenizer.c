@@ -29,30 +29,56 @@ int __jt_is_separator(char c)
 JTToken __jt_handle_separator(char c)
 {
     JTToken token;
-    String sep = new_string();
-    string_push_char(&sep, c);
+    Unit unit;
+    JTTokenValue data = { .nothing = unit };
+    token.data = data;
 
-    token.data = sep;
-    token.type = JSON_TOKENIZER_TYPE_SEPARATOR;
+    switch (c)
+    {
+    case '{':
+        token.type = JSON_TOKEN_TYPE_LEFT_CURLY;
+        break;
+    case '}':
+        token.type = JSON_TOKEN_TYPE_RIGHT_CURLY;
+        break;
+    case '[':
+        token.type = JSON_TOKEN_TYPE_LEFT_SQUARE;
+        break;
+    case ']':
+        token.type = JSON_TOKEN_TYPE_RIGHT_SQUARE;
+        break;
+    case '\"':
+        token.type = JSON_TOKEN_TYPE_QUOTE;
+        break;
+    case ':':
+        token.type = JSON_TOKEN_TYPE_COLON;
+        break;
+    default:
+        printf("ERROR TOKENIZING SEPARATOR : %c", c);
+        break;
+    }
 
     return token;
 }
 
-JTToken __jt_handle_word(String input, int pointer)
+JTToken __jt_handle_word(String input, int *pointer)
 {
     int off = 0;
     JTToken token;
     String word = new_string();
     // detta resulterar  i att om man har t.ex " i en text sträng så ses det som en separator, vilket resulterar i att man senare får pussla ihop strängen igen.
-    while (!__jt_is_separator(input.ptr[pointer + off]))
+    while (!__jt_is_separator(input.ptr[*pointer + off]))
     {
-        string_push_char(&word, input.ptr[pointer + off]);
+        string_push_char(&word, input.ptr[*pointer + off]);
 
         off++;
     }
 
-    token.data = word;
+    JTTokenValue data = { .string = word };
+    token.data = data;
     token.type = JSON_TOKENIZER_TYPE_WORD;
+
+    pointer += word.length - 1;
 
     return token;
 }
@@ -77,10 +103,8 @@ void jt_tokenizer(JTTokenList *token_list, String input)
         }
         else
         {
-            JTToken res = __jt_handle_word(input, pointer);
+            JTToken res = __jt_handle_word(input, &pointer);
             jt_push(token_list, res);
-
-            pointer += res.data.length - 1;
         }
 
         pointer++;
@@ -97,6 +121,6 @@ void jt_print_token_list(JTTokenList * token_list)
         else if (token_list->ptr[i].type == JSON_TOKENIZER_TYPE_WORD)
             printf("%10s ","WORD");
 
-        printf("(%s) \n", token_list->ptr[i].data.ptr);
+        //printf("(%s) \n", token_list->ptr[i].data.ptr);
     }
 }
